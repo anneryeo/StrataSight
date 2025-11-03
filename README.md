@@ -14,7 +14,7 @@ Quick setup (Windows PowerShell):
 
 3. Run the Streamlit app locally
 
-    streamlit run src\app.py
+    streamlit run src\stratasight.py
 
 Notes:
 - Prophet installation can be system-dependent. See documentation for Prophet to check for OS-specific stuff.
