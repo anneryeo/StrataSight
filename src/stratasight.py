@@ -33,7 +33,35 @@ if st.sidebar.button('Fetch & Show'):
 if 'data' in st.session_state:
     df = st.session_state['data']
     st.subheader(f'{selected} Close Price')
-    fig = px.line(df, x=df.index, y='Close', title=f'{selected} Close')
+
+    # yfinance can return a DataFrame with MultiIndex columns when multiple
+    # tickers are requested (e.g. ('TSLA','Close')). Detect that and
+    # extract the appropriate Close series for the selected ticker before
+    # plotting.
+    try:
+        import pandas as _pd
+
+        if isinstance(df.columns, _pd.MultiIndex):
+            close_key = (selected, 'Close')
+            if close_key in df.columns:
+                s = df[close_key]
+            else:
+                # fallback: try to find any column whose second level is 'Close'
+                matches = [c for c in df.columns if c[1] == 'Close']
+                s = df[matches[0]] if matches else df.iloc[:, 0]
+        else:
+            # single-level columns
+            if 'Close' in df.columns:
+                s = df['Close']
+            else:
+                # fallback to first numeric column
+                s = df.iloc[:, 0]
+    except Exception:
+        # Very defensive fallback: pick first column/series
+        s = df.iloc[:, 0]
+
+    # Plot using the extracted series (plotly accepts x and y arrays)
+    fig = px.line(x=s.index, y=s.values, labels={'x': 'Date', 'y': 'Close'}, title=f'{selected} Close')
     st.plotly_chart(fig, use_container_width=True)
 
     st.markdown('### Model actions')
