@@ -11,11 +11,14 @@ from tensorflow.keras import layers, models
 def create_lstm_model(input_shape: Tuple[int, int]) -> tf.keras.Model:
     model = models.Sequential([
         layers.Input(shape=input_shape),
-        layers.LSTM(64, return_sequences=False),
-        layers.Dense(32, activation='relu'),
+        layers.LSTM(50, return_sequences=True),
+        layers.Dropout(0.2),
+        layers.LSTM(50, return_sequences=False),
+        layers.Dropout(0.2),
+        layers.Dense(25, activation='relu'),
         layers.Dense(1)
     ])
-    model.compile(optimizer='adam', loss='mse')
+    model.compile(optimizer='adam', loss='mse', metrics=['mae'])
     return model
 
 
@@ -35,6 +38,12 @@ def prepare_series(df: pd.DataFrame, target_col: str = 'Close', window: int = 20
         else:
             # fallback: use first numeric column
             series = df.select_dtypes(include=["number"]).iloc[:, 0].values.astype('float32')
+    
+    # Normalize the series using MinMaxScaler (scale to [0, 1])
+    from sklearn.preprocessing import MinMaxScaler
+    scaler = MinMaxScaler()
+    series = scaler.fit_transform(series.reshape(-1, 1)).flatten()
+    
     X, y = [], []
     for i in range(len(series) - window):
         X.append(series[i:i+window]) 
@@ -44,10 +53,31 @@ def prepare_series(df: pd.DataFrame, target_col: str = 'Close', window: int = 20
     return X, y
 
 
-def train_and_save(df: pd.DataFrame, out_path: str, epochs: int = 5, window: int = 20):
+def train_and_save(df: pd.DataFrame, out_path: str, epochs: int = 5, window: int = 20, progress_callback=None):
     X, y = prepare_series(df, window=window)
     model = create_lstm_model(input_shape=X.shape[1:])
-    model.fit(X, y, epochs=epochs, batch_size=32, verbose=1)
+
+    # If a progress_callback is provided, create a Keras Callback to report
+    # epoch-level progress as a fraction between 0 and 1.
+    callbacks = []
+    if progress_callback is not None:
+        class ProgressCallback(tf.keras.callbacks.Callback):
+            def __init__(self, total_epochs, cb):
+                super().__init__()
+                self.total_epochs = total_epochs
+                self.cb = cb
+
+            def on_epoch_end(self, epoch, logs=None):
+                try:
+                    frac = float(epoch + 1) / float(self.total_epochs)
+                    self.cb(frac)
+                except Exception:
+                    pass
+
+        callbacks.append(ProgressCallback(epochs, progress_callback))
+
+    model.fit(X, y, epochs=epochs, batch_size=32, verbose=1, callbacks=callbacks)
+
     # Ensure a proper file extension for Keras model saving. Keras requires
     # either a `.keras` (native format) or `.h5` extension when saving to a
     # single file. If the caller provided a directory-like path without

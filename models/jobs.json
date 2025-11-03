@@ -1,0 +1,10 @@
+{
+  "train_forecast": {
+    "status": "done",
+    "started": 1762181121.6563983,
+    "finished": 1762181128.8480523,
+    "progress": 1.0,
+    "error": null,
+    "result_path": "D:\\Developer\\Projects\\Academic Projects\\StrataSight\\models\\job_results\\train_forecast_result.pkl"
+  }
+}
