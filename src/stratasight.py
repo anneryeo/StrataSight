@@ -3,7 +3,10 @@ Streamlit app for StrataSight - basic data exploration and model CRUD.
 """
 
 import os
+import sys
 from pathlib import Path
+# Ensure project root is on sys.path so `import src.*` works when running script
+sys.path.append(str(Path(__file__).resolve().parents[1]))
 import streamlit as st
 import pandas as pd
 import plotly.express as px
