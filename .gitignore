@@ -46,3 +46,41 @@ venv.bak/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# Python test / build caches
+.pytest_cache/
+.mypy_cache/
+.cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Logs
+*.log
+streamlit.log
+
+# Streamlit secrets (do NOT commit secrets)
+.streamlit/secrets.toml
+
+# Saved models and large binaries
+models/saved/
+*.h5
+*.joblib
+*.pkl
+
+# Optional: data directory (uncomment if you want to ignore dataset files)
+#data/
+#*.csv
+#*.xlsx
+#*.json
+
+# Misc
+pip-log.txt
+pip-delete-this-directory.txt
+.ropeproject
+
