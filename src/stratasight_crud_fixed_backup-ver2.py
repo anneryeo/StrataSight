@@ -1,4 +1,4 @@
-﻿# StrataSight - Stock Price Prediction App with CRUD
+# StrataSight - Stock Price Prediction App with CRUD
 # Streamlit frontend with LSTM and Prophet models for stock forecasting.
 
 import sys
@@ -207,7 +207,7 @@ def main():
     st.markdown('Get instant stock price forecasts using LSTM and Prophet models.')
     
     # Add navigation tabs
-    tab1, tab2 = st.tabs(['Generate Predictions', 'Prediction History (CRUD)'])
+    tab1, tab2 = st.tabs(['📊 Generate Predictions', '📚 Prediction History (CRUD)'])
     
     with tab1:
         prediction_tab()
@@ -246,7 +246,7 @@ def prediction_tab():
             return
         
         # Display model information at the top
-        with st.expander("About the Models", expanded=False):
+        with st.expander("ℹ️ About the Models", expanded=False):
             st.markdown("""
             **LSTM (Long Short-Term Memory)**
             - Deep learning neural network specialized for sequential data
@@ -330,7 +330,7 @@ def prediction_tab():
         
         # Add Save Prediction Button (CREATE operation)
         st.markdown('---')
-        with st.expander('Save This Prediction', expanded=False):
+        with st.expander('💾 Save This Prediction', expanded=False):
             save_notes = st.text_area('Add notes (optional):', placeholder='e.g., Strong upward trend expected...', key='save_notes_input')
             if st.button('Save Prediction to History', type='primary', key='save_pred_btn'):
                 lstm_val = lstm_final if lstm_preds is not None else None
@@ -344,7 +344,7 @@ def prediction_tab():
                     prophet_pred=prophet_val,
                     notes=save_notes
                 )
-                st.success(f'Prediction saved! (ID: {record["id"]})')
+                st.success(f'✅ Prediction saved! (ID: {record["id"]})')
                 st.balloons()
         
         st.plotly_chart(create_forecast_chart(hist, lstm_preds, prophet_preds, ticker), use_container_width=True)
@@ -385,7 +385,7 @@ def prediction_tab():
 
 def history_tab():
     """CRUD interface for prediction history"""
-    st.subheader('Prediction History Database')
+    st.subheader('📚 Prediction History Database')
     st.markdown('Manage your saved predictions with full CRUD operations (Create, Read, Update, Delete)')
     
     # READ: Load all predictions
@@ -416,7 +416,7 @@ def history_tab():
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown('### UPDATE: Edit Notes')
+        st.markdown('### ✏️ UPDATE: Edit Notes')
         prediction_ids = [p['id'] for p in predictions]
         selected_id_update = st.selectbox('Select Prediction ID to Update:', prediction_ids, key='update_select')
         
@@ -429,13 +429,13 @@ def history_tab():
             
             if st.button('Update Notes', type='primary', key='update_btn'):
                 if update_prediction_notes(selected_id_update, new_notes):
-                    st.success(f'Prediction ID {selected_id_update} updated successfully!')
+                    st.success(f'✅ Prediction ID {selected_id_update} updated successfully!')
                     st.rerun()
                 else:
-                    st.error('Update failed!')
+                    st.error('❌ Update failed!')
     
     with col2:
-        st.markdown('### DELETE: Remove Prediction')
+        st.markdown('### 🗑️ DELETE: Remove Prediction')
         selected_id_delete = st.selectbox('Select Prediction ID to Delete:', prediction_ids, key='delete_select')
         
         # Find selected prediction for preview
@@ -446,19 +446,19 @@ def history_tab():
             
             if st.button('Delete Prediction', type='secondary', key='delete_btn'):
                 if delete_prediction(selected_id_delete):
-                    st.success(f'Prediction ID {selected_id_delete} deleted!')
+                    st.success(f'✅ Prediction ID {selected_id_delete} deleted!')
                     st.rerun()
                 else:
-                    st.error('Deletion failed!')
+                    st.error('❌ Deletion failed!')
     
     # Bulk operations
     st.markdown('---')
-    st.subheader('Bulk Operations')
+    st.subheader('⚙️ Bulk Operations')
     
     col1, col2 = st.columns(2)
     
     with col1:
-        if st.button('Export All Predictions (JSON)', use_container_width=True):
+        if st.button('📊 Export All Predictions (JSON)', use_container_width=True):
             json_str = json.dumps(predictions, indent=2)
             st.download_button(
                 label='Download JSON',
@@ -468,9 +468,9 @@ def history_tab():
             )
     
     with col2:
-        if st.button('Delete All Predictions', use_container_width=True):
+        if st.button('🗑️ Delete All Predictions', use_container_width=True):
             save_predictions_db([])
-            st.success('All predictions deleted!')
+            st.success('✅ All predictions deleted!')
             st.rerun()
 
 if __name__ == '__main__':
