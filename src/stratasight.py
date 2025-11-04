@@ -203,7 +203,7 @@ def create_forecast_chart(historical_df, lstm_preds=None, prophet_preds=None, ti
     return fig
 
 def main():
-    st.title('StrataSight - Stock Price Predictions')
+    st.title('StrataSight')
     st.markdown('Get instant stock price forecasts using LSTM and Prophet models.')
     
     # Add navigation tabs
